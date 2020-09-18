@@ -2,6 +2,8 @@
 
 This is a compact tool which allows you to merge your pdf files resulting in one final document.
 
+![PDF Merger](GUI.jpg?raw=true)
+
 It is written in **Python 3** and uses Python's **tkinter** for the GUI realization. 
 
 ## Requirements

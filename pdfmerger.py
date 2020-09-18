@@ -1,12 +1,9 @@
-# coding: utf-8
-
 from PyPDF2 import PdfFileMerger
 from tkinter import filedialog
 from tkinter import *
 
 FILES = []
 LABELS = []
-
 
 def open_files():
   global FILES, LABELS
@@ -17,10 +14,10 @@ def open_files():
     FILES.append(file)
 
   # Create a label for each chosen pdf file
-  i = 2
+  i = 1
   for file in FILES:
-    label = Label(root, text=file.split("/")[-1])
-    label.grid(row=i, column=1)
+    label = Label(root, relief=GROOVE, text=file.split("/")[-1])
+    label.grid(row=i, column=0, columnspan=3, padx=5, sticky=W+E+N+S)
     LABELS.append(label)
     i += 1
 
@@ -29,38 +26,39 @@ def clear_files():
   FILES = []
   for label in LABELS:
     label.destroy()
-  filename.delete(0, END)
 
 def merge_files():
   global FILES
-  if FILES != [] and filename.get() != "":
+  if FILES != []:
     merger = PdfFileMerger()
     for pdf in FILES:
-      merger.append(pdf)
-    location = filedialog.askdirectory(initialdir = "~",
-                                       title = "Choose Location")
-    if location != "":
-      merger.write(location + "/" + filename.get() + ".pdf")
+      merger.append(pdf, import_bookmarks=False)
+    location = filedialog.asksaveasfile(initialdir = "~", 
+                                      title = "Merge Files", 
+                                      filetypes = [("PDF", "*.pdf")],
+                                      defaultextension=".pdf")
+    if location != None:
+      merger.write(location.name)
       merger.close()
-      filename.delete(0, END)
-      filename.insert(0, "DONE")
+
 
 if __name__ == '__main__':
 
   root = Tk()
   root.title("PDF Merger")
+  root.resizable(width=False, height=False)
 
   # Create entry + buttons
-  filename = Entry(root)
-  filename.insert(0, "Name your pdf")
-  openfilesbutton = Button(root, text="Open Files", command=open_files)
-  clearfilesbutton = Button(root, text="Delete Files", command=clear_files)
-  mergefilesbutton = Button(root, text="Merge Files", command=merge_files)
+  clear = Button(root, text="Delete Files", command=clear_files)
+  open = Button(root, text="Open Files", command=open_files)
+  merge = Button(root, text="Merge Files", command=merge_files)
 
   # Position entry + buttons
-  filename.grid(row=0, column=4)
-  openfilesbutton.grid(row=0, column=0)
-  clearfilesbutton.grid(row=0, column=1)
-  mergefilesbutton.grid(row=0, column=2)
+  clear.grid(row=0, column=0, padx=10, pady=10, sticky=W+E+N+S)
+  open.grid(row=0, column=1, padx=10, pady=10, sticky=W+E+N+S)
+  merge.grid(row=0, column=2, padx=10, pady=10, sticky=W+E+N+S)
+
+  # Center window
+  root.eval('tk::PlaceWindow . center')
 
   root.mainloop()
